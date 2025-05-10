@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/navigation_register">
+
+    <fragment
+        android:id="@+id/navigation_register"
+        android:name="com.haseebali.savelife.ui.register.RegisterFragment"
+        android:label="Register" />
+
+    <fragment
+        android:id="@+id/navigation_browse"
+        android:name="com.haseebali.savelife.ui.browse.BrowseFragment"
+        android:label="Browse" />
+
+    <fragment
+        android:id="@+id/navigation_profile"
+        android:name="com.haseebali.savelife.ui.profile.ProfileFragment"
+        android:label="Profile" />
+
+    <fragment
+        android:id="@+id/navigation_messages"
+        android:name="com.haseebali.savelife.ui.messages.MessagesFragment"
+        android:label="Messages" />
+
+</navigation> 

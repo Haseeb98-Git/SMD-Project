@@ -19,7 +19,7 @@ They can upload images in messages.
 Once the appointment request is accepted, it is in pending state, only the one who sent the appointment request can mark it as completed.
 The appointment must have completed date property as well.
 13. The Messages button from bottom navbar takes to inbox, where users can see messages from other users.
-14. The Profile button from bottom navbar takes to the profile screen, where users have the following options: Edit profile, View my donation appointments, view my donation history.
+14. The Profile button from bottom navbar takes to the profile screen, where users have the following options: Edit profile, View my donation appointments, view my donation history and Logout.
 Once the appointment is marked is completed, it appears in their donation history (if they were the donor).
 15. The profile pictures and images (in messages) will be stored/retrieved using webAPIs from local PHP apache server. The server is running on [localhost:80](http://localhost:80) and images can be uploaded view [localhost:80/image_api/upload.php](http://localhost:80/image_api/upload.php) and can be fetched from [localhost:80/image_api/uploads/](http://localhost:80/image_api/uploads/).
 Server URLs defined in Constants.kt.
