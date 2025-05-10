@@ -1,0 +1,87 @@
+{
+  "users": {
+    "uid123": {
+      "fullName": "John Doe",
+      "username": "john_d",
+      "email": "john@example.com",
+      "profilePicture": "john_pic.png",
+      "roles": {
+        "donor": true,
+        "requester": false
+      },
+      "donorAvailability": "available", // "available" | "unavailable", if donor
+      "createdAt": "2025-05-10T12:00:00Z"
+    }
+  },
+
+  "donorRegistrations": {
+    "uid123": {
+      "bloodType": "A+",
+      "country": "Pakistan",
+      "city": "Lahore",
+      "address": "Street 10, Gulberg",
+      "healthStatus": "Healthy", // "Healthy" | "Deferred"
+      "description": "Can donate on weekends.",
+      "updatedAt": "2025-05-10T13:00:00Z"
+    }
+  },
+
+  "requesterRegistrations": {
+    "uid456": {
+      "bloodType": "O-",
+      "country": "Pakistan",
+      "city": "Karachi",
+      "address": "Block 4, PECHS",
+      "urgency": "immediate", // "immediate" | "within 24 hours" | "within 3 days" | "other"
+      "description": "Urgent surgery required.",
+      "updatedAt": "2025-05-10T13:10:00Z"
+    }
+  },
+
+  "messages": {
+    "conversationId_uid123_uid456": {
+      "participants": {
+        "uid123": true,
+        "uid456": true
+      },
+      "messages": {
+        "msg1": {
+          "sender": "uid123",
+          "text": "Hi, I saw your request.",
+          "image": null,
+          "timestamp": "2025-05-10T14:00:00Z"
+        },
+        "msg2": {
+          "sender": "uid456",
+          "text": "Thanks, can you donate tomorrow?",
+          "image": "message_img1.png",
+          "timestamp": "2025-05-10T14:02:00Z"
+        }
+      }
+    }
+  },
+
+  "appointments": {
+    "appointment789": {
+      "donorId": "uid123",
+      "requesterId": "uid456",
+      "createdBy": "uid456", // requester initiated the appointment
+      "country": "Pakistan",
+      "city": "Lahore",
+      "venue": "Shaukat Khanum Hospital",
+      "date": "2025-05-12",
+      "status": "accepted", // "pending", "accepted", "rejected", "completed"
+      "completedDate": "2025-05-12T16:00:00Z",
+      "createdAt": "2025-05-10T14:10:00Z"
+    }
+  },
+
+  "donationHistories": {
+    "uid123": {
+      "appointment789": true
+    },
+    "uid456": {
+      "appointment789": true
+    }
+  }
+}

@@ -1,0 +1,34 @@
+Project: SaveLife - Blood Donation Management System.
+
+Features:
+
+1. Users can signup/login. This will be handled via firebase authentication.
+2. For registeration, user can enter Full Name, Username, Email and Password.
+3. Users login by providing email and password. (plaintext password is fine, no need for security)
+4. After login, users can upload their profile pictures, they can also edit their profiles.
+Users can select their roles in edit profile page, they can mark themselves as donors or requesters or both. And they can also add a donor availability status (upon selecting donor role), with options: available/unavailable.
+5. The home screen contains a bottom nav bar with 4 buttons, i.e. Register, Browse, Profile, Messages.
+6. The Register button from Navbar takes to a screen where the user has two options "Register as Donor" and "Register as Requester".
+7. Users can register as donor by adding Blood Type (combobox), Country, City, Address, Health Status (Healthy, Deferred), Description (text description).
+8. Users can register as requester by adding Blood Type (combobox), Country, City, Address, Urgency (options: immediate, within 24 hours, within 3 days, other), Description (text description).
+9. Users can also remove their donor/requester registeration or update it.
+10. The Browse button from bottom navbar takes to a screen where users can view Donors List and Requesters List. Registered donors and requesters appear there.
+11. Users can click on the donor/requester from the Donors List or Requesters List, which takes them to their profile page. Their profile page has the following items: their profile picture, their donor availability status (if they have selected donor role), "View Donation History" button, "Send Message", users can click on send message to message them.
+They can upload images in messages. 
+12. Another option when users click on donor or requester’s profile is to “Send Appointment Request”. They can send donation appointment requests by requesting the city, country, date and venue in messages. Upon receiving the donation appointment request, the receiver can accept it or reject it.
+Once the appointment request is accepted, it is in pending state, only the one who sent the appointment request can mark it as completed.
+The appointment must have completed date property as well.
+13. The Messages button from bottom navbar takes to inbox, where users can see messages from other users.
+14. The Profile button from bottom navbar takes to the profile screen, where users have the following options: Edit profile, View my donation appointments, view my donation history.
+Once the appointment is marked is completed, it appears in their donation history (if they were the donor).
+15. The profile pictures and images (in messages) will be stored/retrieved using webAPIs from local PHP apache server. The server is running on [localhost:80](http://localhost:80) and images can be uploaded view [localhost:80/image_api/upload.php](http://localhost:80/image_api/upload.php) and can be fetched from [localhost:80/image_api/uploads/](http://localhost:80/image_api/uploads/).
+Server URLs defined in Constants.kt.
+Use Glide to load the images. For example Constants.SERVER_IMAGES_URL+image_name
+16. All the other information will be stored on Firebase realtime database.
+
+e.g. We can store the image name (e.g. "pic1.png") for profile picture or image sent in messages and then load it via webAPI.
+Use retrofit for making APIs for images and in retrofit client, make sure to use Consants.SERVER_URL.
+
+Additional note about frontend:
+For the background color, use android:background="@color/purple_200" where suitable.
+activity_main.xml contains splash screen logo, don't remove it.
