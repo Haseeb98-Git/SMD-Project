@@ -1,5 +1,6 @@
 package com.haseebali.savelife.ui.browse
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,10 +8,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.haseebali.savelife.DonationDetailsActivity
 import com.haseebali.savelife.R
 import com.haseebali.savelife.models.User
 
@@ -40,8 +43,13 @@ class BrowseListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
         adapter = BrowseAdapter(isDonorList) { user ->
-            // Handle user click - navigate to profile
-            // TODO: Implement navigation to user profile
+            // Navigate to DonationDetailsActivity
+            val intent = Intent(requireContext(), DonationDetailsActivity::class.java).apply {
+                putExtra("userId", user.uid)
+                putExtra("isDonor", isDonorList)
+                putExtra("currentUserId", FirebaseAuth.getInstance().currentUser?.uid)
+            }
+            startActivity(intent)
         }
         recyclerView.adapter = adapter
 

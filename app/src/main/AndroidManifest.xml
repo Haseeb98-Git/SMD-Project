@@ -47,6 +47,11 @@
         <activity
             android:name=".ui.browse.BrowseActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".DonationDetailsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SaveLife" />
     </application>
 
 </manifest>
