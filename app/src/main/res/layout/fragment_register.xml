@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="@color/purple_200"
-    android:gravity="center">
+    android:background="@color/purple_200">
 
     <TextView
         android:layout_width="wrap_content"
@@ -13,19 +12,67 @@
         android:text="Register as"
         android:textSize="24sp"
         android:textColor="@color/white"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="32dp"
         android:layout_marginBottom="32dp"/>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/registerAsDonorButton"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/donorCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register as Donor"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp"
+        android:clickable="true"
+        android:focusable="true">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/registerAsRequesterButton"
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Donor"
+                android:textSize="20sp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Register as a blood donor and help save lives"
+                android:textColor="@color/black"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/requesterCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Register as Requester"/>
+        android:clickable="true"
+        android:focusable="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Requester"
+                android:textSize="20sp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Request blood donation for yourself or others"
+                android:textColor="@color/black"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout> 

@@ -2,12 +2,29 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/navigation_register">
+    app:startDestination="@id/registerFragment">
 
     <fragment
-        android:id="@+id/navigation_register"
+        android:id="@+id/registerFragment"
         android:name="com.haseebali.savelife.ui.register.RegisterFragment"
-        android:label="Register" />
+        android:label="Register">
+        <action
+            android:id="@+id/action_registerFragment_to_donorRegistrationFragment"
+            app:destination="@id/donorRegistrationFragment" />
+        <action
+            android:id="@+id/action_registerFragment_to_requesterRegistrationFragment"
+            app:destination="@id/requesterRegistrationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/donorRegistrationFragment"
+        android:name="com.haseebali.savelife.ui.register.DonorRegistrationFragment"
+        android:label="Donor Registration" />
+
+    <fragment
+        android:id="@+id/requesterRegistrationFragment"
+        android:name="com.haseebali.savelife.ui.register.RequesterRegistrationFragment"
+        android:label="Requester Registration" />
 
     <fragment
         android:id="@+id/navigation_browse"
