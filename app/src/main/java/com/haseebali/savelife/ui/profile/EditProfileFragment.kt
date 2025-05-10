@@ -84,7 +84,7 @@ class EditProfileFragment : Fragment() {
                             // Load profile picture
                             if (!it.profilePicture.isNullOrEmpty()) {
                                 val imageUrl = Constants.SERVER_IMAGES_URL + it.profilePicture
-                                Toast.makeText(activity, "image url: $imageUrl", Toast.LENGTH_LONG).show()
+                                //Toast.makeText(activity, "image url: $imageUrl", Toast.LENGTH_LONG).show()
                                 
                                 // Test if the image URL is accessible
                                 val client = OkHttpClient()
@@ -102,10 +102,12 @@ class EditProfileFragment : Fragment() {
                                     override fun onResponse(call: Call, response: Response) {
                                         activity?.runOnUiThread {
                                             if (response.isSuccessful) {
-                                                Toast.makeText(activity, "Image URL is accessible (Status: ${response.code})", Toast.LENGTH_LONG).show()
-                                                // Try loading with Glide
+                                                //Toast.makeText(activity, "Image URL is accessible (Status: ${response.code})", Toast.LENGTH_LONG).show()
+                                                // Try loading with Glide, skipping cache
                                                 Glide.with(requireActivity())
                                                     .load(imageUrl)
+                                                    .skipMemoryCache(true)
+                                                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
                                                     .into(binding.profileImage)
                                             } else {
                                                 Toast.makeText(activity, "Image URL returned error: ${response.code}", Toast.LENGTH_LONG).show()

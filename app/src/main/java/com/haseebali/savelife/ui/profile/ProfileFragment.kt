@@ -79,6 +79,8 @@ class ProfileFragment : Fragment() {
                                 Toast.makeText(activity, "image url: $imageUrl", Toast.LENGTH_LONG).show()
                                 Glide.with(requireActivity())
                                     .load(imageUrl)
+                                    .skipMemoryCache(true)
+                                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.NONE)
                                     .into(binding.profileImage)
                             }
                         }
