@@ -1,0 +1,36 @@
+Here's how localhost:80/image_api/upload.php or uploading images looks like:
+<?php
+header("Content-Type: application/json");
+
+$uploadDir = "uploads/";
+if (!file_exists($uploadDir)) {
+    mkdir($uploadDir, 0777, true);
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!isset($_FILES["image"])) {
+        http_response_code(400);
+        echo json_encode(["error" => "No image uploaded"]);
+        exit;
+    }
+
+    $file = $_FILES["image"];
+    $fileName = basename($file["name"]);
+    $targetFilePath = $uploadDir . $fileName;
+
+    $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+    $allowedTypes = ["jpg", "jpeg", "png", "gif"];
+
+    if (!in_array($fileType, $allowedTypes)) {
+        http_response_code(400);
+        echo json_encode(["error" => "Invalid file type"]);
+        exit;
+    }
+
+    if (move_uploaded_file($file["tmp_name"], $targetFilePath)) {
+        echo json_encode(["message" => "Image uploaded successfully", "file" => $fileName]);
+    } else {
+        http_response_code(500);
+        echo json_encode(["error" => "Failed to upload image"]);
+    }
+}
