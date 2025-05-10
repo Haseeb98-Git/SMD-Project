@@ -153,8 +153,20 @@ class ProfileFragment : Fragment() {
 
     private fun uploadImage(uri: Uri) {
         val userId = auth.currentUser?.uid ?: return
-        val imageFile = File(uri.path!!)
-        val requestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+        
+        // Create multipart request body
+        val requestBody = MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart(
+                "image",
+                "profile_${userId}.jpg",
+                requireContext().contentResolver.openInputStream(uri)?.let { inputStream ->
+                    val bytes = inputStream.readBytes()
+                    RequestBody.create("image/*".toMediaTypeOrNull(), bytes)
+                } ?: return
+            )
+            .build()
+
         val request = Request.Builder()
             .url(Constants.SERVER_URL + "image_api/upload.php")
             .post(requestBody)
@@ -163,17 +175,40 @@ class ProfileFragment : Fragment() {
         OkHttpClient().newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
                 activity?.runOnUiThread {
-                    Toast.makeText(context, "Error uploading image", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Error uploading image: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onResponse(call: Call, response: Response) {
-                val imageName = response.body?.string()
-                if (imageName != null) {
-                    // Update user profile with new image name
-                    database.reference.child("users").child(userId)
-                        .child("profilePicture")
-                        .setValue(imageName)
+                val responseBody = response.body?.string()
+                if (response.isSuccessful && responseBody != null) {
+                    try {
+                        val jsonResponse = org.json.JSONObject(responseBody)
+                        val fileName = jsonResponse.getString("file")
+                        
+                        // Update user profile with new image name
+                        database.reference.child("users").child(userId)
+                            .child("profilePicture")
+                            .setValue(fileName)
+                            .addOnSuccessListener {
+                                activity?.runOnUiThread {
+                                    Toast.makeText(context, "Profile picture updated successfully", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            .addOnFailureListener { e ->
+                                activity?.runOnUiThread {
+                                    Toast.makeText(context, "Error updating profile: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                    } catch (e: Exception) {
+                        activity?.runOnUiThread {
+                            Toast.makeText(context, "Error parsing server response: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    activity?.runOnUiThread {
+                        Toast.makeText(context, "Server error: ${responseBody}", Toast.LENGTH_SHORT).show()
+                    }
                 }
             }
         })
