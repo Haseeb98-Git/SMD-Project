@@ -20,8 +20,6 @@ class DonationDetailsActivity : AppCompatActivity() {
     private lateinit var tvStatus: TextView
     private lateinit var tvDescription: TextView
     private lateinit var btnViewProfile: Button
-    private lateinit var btnSendMessage: Button
-    private lateinit var btnSendAppointment: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,8 +33,6 @@ class DonationDetailsActivity : AppCompatActivity() {
         tvStatus = findViewById(R.id.tvStatus)
         tvDescription = findViewById(R.id.tvDescription)
         btnViewProfile = findViewById(R.id.btnViewProfile)
-        btnSendMessage = findViewById(R.id.btnSendMessage)
-        btnSendAppointment = findViewById(R.id.btnSendAppointment)
 
         // Get data from intent
         val userId = intent.getStringExtra("userId") ?: return
@@ -53,17 +49,13 @@ class DonationDetailsActivity : AppCompatActivity() {
             loadRequesterDetails(userId)
         }
 
-        // Set up button click listeners
+        // Set up button click listener
         btnViewProfile.setOnClickListener {
-            // TODO: Implement view profile functionality
-        }
-
-        btnSendMessage.setOnClickListener {
-            // TODO: Implement send message functionality
-        }
-
-        btnSendAppointment.setOnClickListener {
-            // TODO: Implement send appointment request functionality
+            val intent = Intent(this, UserProfileActivity::class.java).apply {
+                putExtra("userId", userId)
+                putExtra("currentUserId", currentUserId)
+            }
+            startActivity(intent)
         }
     }
 

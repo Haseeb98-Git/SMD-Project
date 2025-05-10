@@ -12,13 +12,23 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
+            android:gravity="center"
             android:layout_marginBottom="16dp"/>
+
+        <ImageView
+            android:id="@+id/ivProfilePicture"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_foreground"/>
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -34,48 +44,35 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:id="@+id/tvBloodType"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18sp"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/tvLocation"
+                    android:id="@+id/tvRoles"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
-                    android:id="@+id/tvAddress"
+                    android:id="@+id/tvDonorAvailability"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/tvStatus"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="8dp"/>
-
-                <TextView
-                    android:id="@+id/tvDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginBottom="8dp"
+                    android:visibility="gone"/>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
         <Button
-            android:id="@+id/btnViewProfile"
+            android:id="@+id/btnSendMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="View Profile"/>
+            android:text="Send Message"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/btnSendAppointment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send Appointment Request"/>
 
     </LinearLayout>
 </ScrollView> 
