@@ -29,7 +29,20 @@
     <fragment
         android:id="@+id/navigation_browse"
         android:name="com.haseebali.savelife.ui.browse.BrowseFragment"
-        android:label="Browse" />
+        android:label="Browse">
+        <action
+            android:id="@+id/action_browseFragment_to_browseListFragment"
+            app:destination="@id/browseListFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/browseListFragment"
+        android:name="com.haseebali.savelife.ui.browse.BrowseListFragment"
+        android:label="Browse List">
+        <argument
+            android:name="is_donor_list"
+            app:argType="boolean" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -40,5 +53,30 @@
         android:id="@+id/navigation_messages"
         android:name="com.haseebali.savelife.ui.messages.MessagesFragment"
         android:label="Messages" />
+
+    <!-- Add navigation actions between main fragments -->
+    <action
+        android:id="@+id/action_global_registerFragment"
+        app:destination="@id/registerFragment"
+        app:popUpTo="@id/registerFragment"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_browseFragment"
+        app:destination="@id/navigation_browse"
+        app:popUpTo="@id/navigation_browse"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_profileFragment"
+        app:destination="@id/navigation_profile"
+        app:popUpTo="@id/navigation_profile"
+        app:popUpToInclusive="true" />
+
+    <action
+        android:id="@+id/action_global_messagesFragment"
+        app:destination="@id/navigation_messages"
+        app:popUpTo="@id/navigation_messages"
+        app:popUpToInclusive="true" />
 
 </navigation> 

@@ -78,7 +78,7 @@ class RequesterRegistrationFragment : Fragment() {
             "address" to address,
             "urgency" to urgency,
             "description" to description,
-            "updatedAt" to Date().time
+            "updatedAt" to Date().time.toString()
         )
 
         database.reference.child("requesterRegistrations").child(userId)

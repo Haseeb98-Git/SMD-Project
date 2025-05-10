@@ -78,7 +78,7 @@ class DonorRegistrationFragment : Fragment() {
             "address" to address,
             "healthStatus" to healthStatus,
             "description" to description,
-            "updatedAt" to Date().time
+            "updatedAt" to Date().time.toString()
         )
 
         database.reference.child("donorRegistrations").child(userId)

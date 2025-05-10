@@ -17,5 +17,28 @@ class HomeActivity : AppCompatActivity() {
         
         val navView: BottomNavigationView = findViewById(R.id.bottom_navigation)
         navView.setupWithNavController(navController)
+
+        // Handle navigation item selection manually
+        navView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_register -> {
+                    navController.navigate(R.id.action_global_registerFragment)
+                    true
+                }
+                R.id.navigation_browse -> {
+                    navController.navigate(R.id.action_global_browseFragment)
+                    true
+                }
+                R.id.navigation_profile -> {
+                    navController.navigate(R.id.action_global_profileFragment)
+                    true
+                }
+                R.id.navigation_messages -> {
+                    navController.navigate(R.id.action_global_messagesFragment)
+                    true
+                }
+                else -> false
+            }
+        }
     }
 } 
