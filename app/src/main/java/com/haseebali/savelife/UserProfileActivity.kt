@@ -3,16 +3,25 @@ package com.haseebali.savelife
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.haseebali.savelife.models.User
+import com.google.android.material.textfield.TextInputEditText
+import android.app.DatePickerDialog
+import android.app.Dialog
+import com.haseebali.savelife.models.Appointment
+import java.time.Instant
+import java.util.*
 
 class UserProfileActivity : AppCompatActivity() {
     private lateinit var tvName: TextView
@@ -51,7 +60,7 @@ class UserProfileActivity : AppCompatActivity() {
         }
 
         btnSendAppointment.setOnClickListener {
-            // TODO: Implement send appointment request functionality
+            showAppointmentRequestDialog()
         }
     }
 
@@ -92,5 +101,84 @@ class UserProfileActivity : AppCompatActivity() {
                     // Handle error
                 }
             })
+    }
+
+    private fun showAppointmentRequestDialog() {
+        val dialog = Dialog(this)
+        dialog.setContentView(R.layout.dialog_appointment_request)
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        val etCountry = dialog.findViewById<TextInputEditText>(R.id.etCountry)
+        val etCity = dialog.findViewById<TextInputEditText>(R.id.etCity)
+        val etVenue = dialog.findViewById<TextInputEditText>(R.id.etVenue)
+        val etDate = dialog.findViewById<TextInputEditText>(R.id.etDate)
+        val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
+        val btnSend = dialog.findViewById<Button>(R.id.btnSend)
+
+        // Set up date picker
+        etDate.setOnClickListener {
+            val datePickerDialog = DatePickerDialog(
+                this,
+                { _, year, month, day ->
+                    val formattedMonth = String.format("%02d", month + 1)
+                    val formattedDay = String.format("%02d", day)
+                    etDate.setText("$year-$formattedMonth-$formattedDay")
+                },
+                Calendar.getInstance().get(Calendar.YEAR),
+                Calendar.getInstance().get(Calendar.MONTH),
+                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+            )
+            datePickerDialog.show()
+        }
+
+        btnCancel.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnSend.setOnClickListener {
+            val country = etCountry.text.toString().trim()
+            val city = etCity.text.toString().trim()
+            val venue = etVenue.text.toString().trim()
+            val date = etDate.text.toString().trim()
+
+            if (country.isEmpty() || city.isEmpty() || venue.isEmpty() || date.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Create appointment
+            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
+            val donorId = intent.getStringExtra("userId") ?: return@setOnClickListener
+
+            val appointment = Appointment(
+                id = "appointment_${System.currentTimeMillis()}",
+                donorId = donorId,
+                requesterId = currentUserId,
+                createdBy = currentUserId,
+                country = country,
+                city = city,
+                venue = venue,
+                date = date,
+                status = "pending",
+                createdAt = Instant.now().toString()
+            )
+
+            // Save appointment to Firebase
+            FirebaseDatabase.getInstance().getReference("appointments")
+                .child(appointment.id)
+                .setValue(appointment)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Appointment request sent", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Failed to send request", Toast.LENGTH_SHORT).show()
+                }
+        }
+
+        dialog.show()
     }
 } 

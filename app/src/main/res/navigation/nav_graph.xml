@@ -52,7 +52,16 @@
         <action
             android:id="@+id/action_navigation_profile_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_navigation_profile_to_appointmentsFragment"
+            app:destination="@id/appointmentsFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/appointmentsFragment"
+        android:name="com.haseebali.savelife.ui.profile.AppointmentsFragment"
+        android:label="My Appointments"
+        tools:layout="@layout/fragment_appointments" />
 
     <fragment
         android:id="@+id/navigation_messages"
