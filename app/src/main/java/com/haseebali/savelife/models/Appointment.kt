@@ -1,7 +1,7 @@
 package com.haseebali.savelife.models
 
 data class Appointment(
-    val id: String = "",
+    var id: String = "",
     val donorId: String = "",
     val requesterId: String = "",
     val createdBy: String = "", // requester who initiated the appointment

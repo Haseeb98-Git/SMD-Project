@@ -14,19 +14,12 @@
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvStatus"
+            android:id="@+id/tvRequesterName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textSize="16sp"
             android:layout_marginBottom="8dp"/>
-
-        <TextView
-            android:id="@+id/tvParticipant"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:layout_marginBottom="4dp"/>
 
         <TextView
             android:id="@+id/tvDate"
@@ -47,38 +40,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="4dp"/>
 
-        <LinearLayout
-            android:id="@+id/layoutActions"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvCompletedDate"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="end">
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:layout_marginBottom="4dp"/>
 
-            <Button
-                android:id="@+id/btnAccept"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Accept"
-                android:visibility="gone"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
-
-            <Button
-                android:id="@+id/btnReject"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Reject"
-                android:visibility="gone"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
-
-            <Button
-                android:id="@+id/btnComplete"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Mark as Completed"
-                android:visibility="gone"
-                style="@style/Widget.MaterialComponents.Button.TextButton"/>
-        </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView> 

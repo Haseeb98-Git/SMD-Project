@@ -68,6 +68,8 @@ class AppointmentsFragment : Fragment() {
                 for (appointmentSnapshot in snapshot.children) {
                     val appointment = appointmentSnapshot.getValue(Appointment::class.java)
                     appointment?.let {
+                        // Set the ID from Firebase key
+                        it.id = appointmentSnapshot.key ?: ""
                         // Only show appointments where current user is donor or requester
                         if (it.donorId == currentUserId || it.requesterId == currentUserId) {
                             appointments.add(it)
@@ -92,7 +94,7 @@ class AppointmentsFragment : Fragment() {
         )
         
         if (newStatus == "completed") {
-            updates["completedDate"] = java.time.Instant.now().toString()
+            updates["completedDate"] = System.currentTimeMillis().toString()
         }
 
         FirebaseDatabase.getInstance().getReference("appointments")
@@ -134,6 +136,7 @@ class AppointmentAdapter(
 
     inner class AppointmentViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
+        private val tvParticipant: TextView = itemView.findViewById(R.id.tvParticipant)
         private val tvDate: TextView = itemView.findViewById(R.id.tvDate)
         private val tvLocation: TextView = itemView.findViewById(R.id.tvLocation)
         private val tvVenue: TextView = itemView.findViewById(R.id.tvVenue)
@@ -151,6 +154,25 @@ class AppointmentAdapter(
                 "completed" -> tvStatus.setTextColor(itemView.context.getColor(android.R.color.darker_gray))
             }
 
+            // Set participant info
+            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+            val otherUserId = if (currentUserId == appointment.donorId) {
+                appointment.requesterId
+            } else {
+                appointment.donorId
+            }
+            val otherUserRole = if (currentUserId == appointment.donorId) "Requester" else "Donor"
+            
+            // Get other user's name from Firebase
+            FirebaseDatabase.getInstance().getReference("users")
+                .child(otherUserId)
+                .child("fullName")
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    val name = snapshot.value as? String ?: "Unknown User"
+                    tvParticipant.text = "$otherUserRole: $name"
+                }
+
             // Set date
             tvDate.text = "Date: ${appointment.date}"
 
@@ -161,8 +183,6 @@ class AppointmentAdapter(
             tvVenue.text = "Venue: ${appointment.venue}"
 
             // Show/hide action buttons based on status and user role
-            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-            
             btnAccept.visibility = View.GONE
             btnReject.visibility = View.GONE
             btnComplete.visibility = View.GONE

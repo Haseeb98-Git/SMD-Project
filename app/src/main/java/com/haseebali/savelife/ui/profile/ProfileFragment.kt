@@ -99,13 +99,11 @@ class ProfileFragment : Fragment() {
         }
 
         binding.donationAppointmentsCard.setOnClickListener {
-            // TODO: Implement donation appointments view
-            Toast.makeText(context, "Coming soon!", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_navigation_profile_to_appointmentsFragment)
         }
 
         binding.donationHistoryCard.setOnClickListener {
-            // TODO: Implement donation history view
-            Toast.makeText(context, "Coming soon!", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_navigation_profile_to_donationHistoryFragment)
         }
 
         binding.logoutCard.setOnClickListener {
