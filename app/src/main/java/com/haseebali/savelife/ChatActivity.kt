@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.haseebali.savelife.models.Message
+import com.haseebali.savelife.models.User
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,6 +31,7 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var otherUserId: String
     private lateinit var otherUserName: String
     private lateinit var conversationId: String
+    private var currentUserName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +58,9 @@ class ChatActivity : AppCompatActivity() {
             "conversation_${otherUserId}_${currentUserId}"
         }
 
+        // Get current user's name for notifications
+        getCurrentUserName()
+
         // Setup RecyclerView
         rvMessages.layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
@@ -74,6 +79,21 @@ class ChatActivity : AppCompatActivity() {
                 etMessage.text.clear()
             }
         }
+    }
+
+    private fun getCurrentUserName() {
+        FirebaseDatabase.getInstance().getReference("users")
+            .child(currentUserId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val user = snapshot.getValue(User::class.java)
+                    currentUserName = user?.fullName ?: "User"
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            })
     }
 
     private fun loadMessages() {
@@ -123,6 +143,27 @@ class ChatActivity : AppCompatActivity() {
             .child("participants")
             .child(otherUserId)
             .setValue(true)
+            
+        // Send push notification to other user
+        sendNotificationToUser(otherUserId, text)
+    }
+    
+    private fun sendNotificationToUser(recipientUserId: String, messageText: String) {
+        // Get the application instance
+        val app = application as SaveLifeApplication
+        
+        // Send notification
+        app.notificationService.sendNotificationToUser(
+            recipientUserId = recipientUserId,
+            title = "New message from $currentUserName",
+            message = messageText,
+            data = mapOf(
+                "conversationId" to conversationId,
+                "senderId" to currentUserId,
+                "senderName" to currentUserName,
+                "type" to "message"
+            )
+        )
     }
 }
 

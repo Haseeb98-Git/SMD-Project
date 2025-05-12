@@ -7,6 +7,6 @@ object Constants {
     const val SERVER_URL = SERVER_URL_EMULATOR
 
     const val ONESIGNAL_API_KEY = "os_v2_app_ivjcm52xrrbxdlo7koo4wmahhsw4j5otkgtewomdsang6o33fncfvs4lssh7v6gcndkruyb4fejvudflisdut64anfp7herfjruolfi"
-    const val ONESIGNAL_APP_ID = ""
+    const val ONESIGNAL_APP_ID = "45522677-578c-4371-addf-539dcb30073c"
     const val SERVER_IMAGES_URL = "${SERVER_URL}image_api/uploads/"
 }

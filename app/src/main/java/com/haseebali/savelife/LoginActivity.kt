@@ -34,6 +34,11 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
+                        val uid = FirebaseAuth.getInstance().currentUser?.uid
+                        if (uid != null) {
+                            com.onesignal.OneSignal.login(uid)
+                        }
+
                         startActivity(Intent(this, HomeActivity::class.java))
                         finish()
                     } else {
@@ -41,6 +46,7 @@ class LoginActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT).show()
                     }
                 }
+
         }
 
         registerTextView.setOnClickListener {

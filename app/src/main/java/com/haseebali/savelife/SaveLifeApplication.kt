@@ -6,12 +6,14 @@ import android.widget.TextView
 import com.google.firebase.FirebaseApp
 import com.haseebali.savelife.data.ConnectivityManager
 import com.haseebali.savelife.data.DatabaseHelper
+import com.haseebali.savelife.data.NotificationService
 import com.haseebali.savelife.data.SyncManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import com.onesignal.OneSignal
+import com.onesignal.debug.LogLevel
 
 class SaveLifeApplication : Application() {
     
@@ -24,6 +26,10 @@ class SaveLifeApplication : Application() {
     
     lateinit var syncManager: SyncManager
         private set
+        
+    // Notification service
+    lateinit var notificationService: NotificationService
+        private set
     
     // Application-level coroutine scope
     private val applicationScope = CoroutineScope(Dispatchers.Main)
@@ -33,18 +39,27 @@ class SaveLifeApplication : Application() {
         
         // Initialize Firebase
         FirebaseApp.initializeApp(this)
-        // one signal initialization
-
+        
+        // OneSignal initialization
+        OneSignal.Debug.logLevel = LogLevel.VERBOSE
+        
         // Initialize with your OneSignal App ID
-        OneSignal.initWithContext(this, "45522677-578c-4371-addf-539dcb30073c")
+        OneSignal.initWithContext(this, Constants.ONESIGNAL_APP_ID)
 
         // Initialize managers
         databaseHelper = DatabaseHelper(this)
         connectivityManager = ConnectivityManager(this)
         syncManager = SyncManager(this)
+        notificationService = NotificationService()
         
         // Initialize singleton instance
         instance = this
+    }
+    
+    // Set external user ID for OneSignal when a user logs in
+    fun setCurrentUser(userId: String) {
+        // Set OneSignal External User ID
+        OneSignal.login(userId)
     }
     
     // Show or hide offline mode indicator
