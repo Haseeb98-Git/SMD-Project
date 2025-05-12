@@ -21,6 +21,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.haseebali.savelife.DonationDetailsActivity
 import com.haseebali.savelife.R
+import com.haseebali.savelife.SaveLifeApplication
 import com.haseebali.savelife.models.DonorRegistration
 import com.haseebali.savelife.models.RequesterRegistration
 import com.haseebali.savelife.models.User
@@ -122,6 +123,15 @@ class BrowseListFragment : Fragment() {
         allUsers.clear()
         filteredUsers.clear()
 
+        // Check if app is offline
+        val app = requireActivity().application as SaveLifeApplication
+        if (!app.connectivityManager.isNetworkAvailable.value) {
+            // Load from local database
+            loadFromLocalDatabase()
+            return
+        }
+
+        // Load from Firebase if online
         usersRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val users = mutableListOf<User>()
@@ -133,6 +143,9 @@ class BrowseListFragment : Fragment() {
                         if ((isDonorList && userWithUid.roles?.donor == true) ||
                             (!isDonorList && userWithUid.roles?.requester == true)) {
                             users.add(userWithUid)
+                            
+                            // Also save to local database for offline mode
+                            app.databaseHelper.saveUser(userWithUid)
                         }
                     }
                 }
@@ -142,21 +155,80 @@ class BrowseListFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle error
+                // Handle error - try to load from local database as fallback
+                loadFromLocalDatabase()
             }
         })
     }
-
+    
+    private fun loadFromLocalDatabase() {
+        val app = requireActivity().application as SaveLifeApplication
+        val dbHelper = app.databaseHelper
+        
+        // Get all users
+        val allLocalUsers = dbHelper.getAllUsers()
+        
+        // Get registrations based on type
+        val registrations = if (isDonorList) {
+            dbHelper.getAllDonorRegistrations()
+        } else {
+            dbHelper.getAllRequesterRegistrations()
+        }
+        
+        // Process users based on roles and available registrations
+        val filteredLocalUsers = allLocalUsers.filter { user ->
+            val hasRole = if (isDonorList) {
+                user.roles?.donor == true
+            } else {
+                user.roles?.requester == true
+            }
+            
+            // User needs to have both the right role and a registration
+            hasRole && registrations.containsKey(user.uid)
+        }
+        
+        // Create UserWithDetails objects
+        for (user in filteredLocalUsers) {
+            if (isDonorList) {
+                val registration = dbHelper.getAllDonorRegistrations()[user.uid]
+                registration?.let {
+                    val userWithDetails = UserWithDetails(
+                        user = user,
+                        bloodType = it.bloodType,
+                        country = it.country,
+                        city = it.city
+                    )
+                    addUserWithDetails(userWithDetails)
+                }
+            } else {
+                val registration = dbHelper.getAllRequesterRegistrations()[user.uid]
+                registration?.let {
+                    val userWithDetails = UserWithDetails(
+                        user = user,
+                        bloodType = it.bloodType,
+                        country = it.country,
+                        city = it.city
+                    )
+                    addUserWithDetails(userWithDetails)
+                }
+            }
+        }
+        
+        // Update UI with local data
+        updateUI()
+    }
+    
     private fun loadUserRegistrations(users: List<User>, registrationsRef: DatabaseReference) {
-        // Clear lists before loading
-        allUsers.clear()
-        filteredUsers.clear()
+        val app = requireActivity().application as SaveLifeApplication
         
         for (user in users) {
             registrationsRef.child(user.uid).get().addOnSuccessListener { snapshot ->
                 if (isDonorList) {
                     val registration = snapshot.getValue(DonorRegistration::class.java)
                     registration?.let {
+                        // Save to local database for offline mode
+                        app.databaseHelper.saveDonorRegistration(user.uid, it)
+                        
                         val userWithDetails = UserWithDetails(
                             user = user,
                             bloodType = it.bloodType,
@@ -168,6 +240,9 @@ class BrowseListFragment : Fragment() {
                 } else {
                     val registration = snapshot.getValue(RequesterRegistration::class.java)
                     registration?.let {
+                        // Save to local database for offline mode
+                        app.databaseHelper.saveRequesterRegistration(user.uid, it)
+                        
                         val userWithDetails = UserWithDetails(
                             user = user,
                             bloodType = it.bloodType,

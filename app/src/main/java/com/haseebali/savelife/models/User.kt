@@ -9,4 +9,6 @@ data class User(
     val roles: Roles = Roles(),
     val donorAvailability: String = "",
     val createdAt: String = ""
-) 
+) {
+    companion object {}
+} 

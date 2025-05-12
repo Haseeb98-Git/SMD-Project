@@ -8,4 +8,6 @@ data class DonorRegistration(
     val healthStatus: String = "", // "Healthy" | "Deferred"
     val description: String = "",
     val updatedAt: Any = "" // Can be either Long or String
-) 
+) {
+    companion object {}
+} 
