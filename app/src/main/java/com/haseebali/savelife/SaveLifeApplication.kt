@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import com.onesignal.OneSignal
 
 class SaveLifeApplication : Application() {
     
@@ -32,7 +33,11 @@ class SaveLifeApplication : Application() {
         
         // Initialize Firebase
         FirebaseApp.initializeApp(this)
-        
+        // one signal initialization
+
+        // Initialize with your OneSignal App ID
+        OneSignal.initWithContext(this, "45522677-578c-4371-addf-539dcb30073c")
+
         // Initialize managers
         databaseHelper = DatabaseHelper(this)
         connectivityManager = ConnectivityManager(this)

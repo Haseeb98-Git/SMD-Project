@@ -43,6 +43,7 @@ android {
 
 dependencies {
 
+    implementation("com.onesignal:OneSignal:[5.1.6, 5.1.99]")
     // glide dependency
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     // Firebase Authentication
