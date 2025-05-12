@@ -183,6 +183,7 @@ class ProfileFragment : Fragment() {
 }
 
 data class User(
+    var uid: String = "",
     val fullName: String = "",
     val username: String = "",
     val email: String = "",

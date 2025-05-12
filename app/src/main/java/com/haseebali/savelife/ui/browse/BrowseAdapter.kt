@@ -11,12 +11,16 @@ import com.haseebali.savelife.R
 import com.haseebali.savelife.models.User
 import com.haseebali.savelife.models.DonorRegistration
 import com.haseebali.savelife.models.RequesterRegistration
+import com.haseebali.savelife.models.UserWithDetails
 import com.google.firebase.database.FirebaseDatabase
 
 class BrowseAdapter(
     private val isDonorList: Boolean,
-    private val onUserClick: (User) -> Unit
+    private val onUserClick: (UserWithDetails) -> Unit
 ) : ListAdapter<User, BrowseAdapter.UserViewHolder>(UserDiffCallback()) {
+
+    // Map to store the registration details for each user
+    private val userDetailsMap = mutableMapOf<String, Pair<String, String>>() // uid -> (bloodType, location)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -25,7 +29,8 @@ class BrowseAdapter(
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        val user = getItem(position)
+        holder.bind(user)
     }
 
     inner class UserViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,7 +42,16 @@ class BrowseAdapter(
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    onUserClick(getItem(position))
+                    val user = getItem(position)
+                    val details = userDetailsMap[user.uid]
+                    onUserClick(
+                        UserWithDetails(
+                            user = user,
+                            bloodType = details?.first ?: "",
+                            country = details?.second?.split(", ")?.getOrNull(1) ?: "",
+                            city = details?.second?.split(", ")?.getOrNull(0) ?: ""
+                        )
+                    )
                 }
             }
         }
@@ -57,14 +71,26 @@ class BrowseAdapter(
                 if (isDonorList) {
                     val registration = snapshot.getValue(DonorRegistration::class.java)
                     registration?.let {
-                        bloodTypeText.text = "Blood Type: ${it.bloodType}"
-                        locationText.text = "${it.city}, ${it.country}"
+                        val bloodType = it.bloodType
+                        val location = "${it.city}, ${it.country}"
+                        
+                        bloodTypeText.text = "Blood Type: $bloodType"
+                        locationText.text = location
+                        
+                        // Store details for click handler
+                        userDetailsMap[user.uid] = Pair(bloodType, location)
                     }
                 } else {
                     val registration = snapshot.getValue(RequesterRegistration::class.java)
                     registration?.let {
-                        bloodTypeText.text = "Blood Type: ${it.bloodType}"
-                        locationText.text = "${it.city}, ${it.country}"
+                        val bloodType = it.bloodType
+                        val location = "${it.city}, ${it.country}"
+                        
+                        bloodTypeText.text = "Blood Type: $bloodType"
+                        locationText.text = location
+                        
+                        // Store details for click handler
+                        userDetailsMap[user.uid] = Pair(bloodType, location)
                     }
                 }
             }
