@@ -58,38 +58,48 @@ class DonorRegistrationFragment : Fragment() {
     private fun saveDonorRegistration() {
         val userId = auth.currentUser?.uid ?: return
 
-        val bloodType = binding.bloodTypeDropdown.text.toString()
-        val country = binding.countryEditText.text.toString()
-        val city = binding.cityEditText.text.toString()
-        val address = binding.addressEditText.text.toString()
-        val healthStatus = binding.healthStatusDropdown.text.toString()
-        val description = binding.descriptionEditText.text.toString()
+        // Check if user has donor role
+        database.reference.child("users").child(userId).child("roles")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val roles = snapshot.getValue(Roles::class.java) ?: Roles()
+                if (!roles.donor) {
+                    Toast.makeText(context, "You must select donor role in your profile first", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
 
-        if (bloodType.isEmpty() || country.isEmpty() || city.isEmpty() || 
-            address.isEmpty() || healthStatus.isEmpty() || description.isEmpty()) {
-            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
-            return
-        }
+                val bloodType = binding.bloodTypeDropdown.text.toString()
+                val country = binding.countryEditText.text.toString()
+                val city = binding.cityEditText.text.toString()
+                val address = binding.addressEditText.text.toString()
+                val healthStatus = binding.healthStatusDropdown.text.toString()
+                val description = binding.descriptionEditText.text.toString()
 
-        val donorData = hashMapOf<String, Any>(
-            "bloodType" to bloodType,
-            "country" to country,
-            "city" to city,
-            "address" to address,
-            "healthStatus" to healthStatus,
-            "description" to description,
-            "updatedAt" to Date().time.toString()
-        )
+                if (bloodType.isEmpty() || country.isEmpty() || city.isEmpty() || 
+                    address.isEmpty() || healthStatus.isEmpty() || description.isEmpty()) {
+                    Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
 
-        database.reference.child("donorRegistrations").child(userId)
-            .setValue(donorData)
-            .addOnSuccessListener {
-                Toast.makeText(context, "Donor registration saved successfully", Toast.LENGTH_SHORT).show()
-                // Update user roles to include donor
-                updateUserRoles(true)
-            }
-            .addOnFailureListener {
-                Toast.makeText(context, "Error saving donor registration", Toast.LENGTH_SHORT).show()
+                val donorData = hashMapOf<String, Any>(
+                    "bloodType" to bloodType,
+                    "country" to country,
+                    "city" to city,
+                    "address" to address,
+                    "healthStatus" to healthStatus,
+                    "description" to description,
+                    "updatedAt" to Date().time.toString()
+                )
+
+                database.reference.child("donorRegistrations").child(userId)
+                    .setValue(donorData)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "Donor registration saved successfully", Toast.LENGTH_SHORT).show()
+                        requireActivity().onBackPressed()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Error saving donor registration", Toast.LENGTH_SHORT).show()
+                    }
             }
     }
 

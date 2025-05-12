@@ -60,6 +60,7 @@ class EditProfileFragment : Fragment() {
         setupProfileImageClick()
         loadUserProfile()
         setupSaveButton()
+        setupRoleCheckboxes()
     }
 
     private fun setupProfileImageClick() {
@@ -147,12 +148,37 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    private fun setupRoleCheckboxes() {
+        binding.donorCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.requesterCheckBox.isChecked = false
+                binding.donorAvailabilityGroup.visibility = View.VISIBLE
+            } else {
+                binding.donorAvailabilityGroup.visibility = View.GONE
+            }
+        }
+
+        binding.requesterCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                binding.donorCheckBox.isChecked = false
+                binding.donorAvailabilityGroup.visibility = View.GONE
+            }
+        }
+    }
+
     private fun saveProfile() {
         val userId = auth.currentUser?.uid ?: return
         val fullName = binding.fullNameEditText.text.toString()
         val username = binding.usernameEditText.text.toString()
         val isDonor = binding.donorCheckBox.isChecked
         val isRequester = binding.requesterCheckBox.isChecked
+
+        // Ensure only one role is selected
+        if (isDonor && isRequester) {
+            Toast.makeText(context, "You can only select one role at a time", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         val donorAvailability = if (isDonor) {
             when (binding.donorAvailabilityGroup.checkedRadioButtonId) {
                 binding.availableRadioButton.id -> "available"

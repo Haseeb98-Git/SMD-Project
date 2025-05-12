@@ -9,9 +9,4 @@ data class User(
     val roles: Roles = Roles(),
     val donorAvailability: String = "",
     val createdAt: String = ""
-)
-
-data class Roles(
-    val donor: Boolean = false,
-    val requester: Boolean = false
 ) 

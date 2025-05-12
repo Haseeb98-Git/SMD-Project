@@ -20,6 +20,7 @@ import com.google.android.material.textfield.TextInputEditText
 import android.app.DatePickerDialog
 import android.app.Dialog
 import com.haseebali.savelife.models.Appointment
+import com.haseebali.savelife.models.Roles
 import java.time.Instant
 import java.util.*
 
@@ -118,65 +119,65 @@ class UserProfileActivity : AppCompatActivity() {
         val btnCancel = dialog.findViewById<Button>(R.id.btnCancel)
         val btnSend = dialog.findViewById<Button>(R.id.btnSend)
 
-        // Set up date picker
-        etDate.setOnClickListener {
-            val datePickerDialog = DatePickerDialog(
-                this,
-                { _, year, month, day ->
-                    val formattedMonth = String.format("%02d", month + 1)
-                    val formattedDay = String.format("%02d", day)
-                    etDate.setText("$year-$formattedMonth-$formattedDay")
-                },
-                Calendar.getInstance().get(Calendar.YEAR),
-                Calendar.getInstance().get(Calendar.MONTH),
-                Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
-            )
-            datePickerDialog.show()
-        }
+        // Get current user's role
+        val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val targetUserId = intent.getStringExtra("userId") ?: return
+
+        FirebaseDatabase.getInstance().getReference("users")
+            .child(currentUserId)
+            .child("roles")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val roles = snapshot.getValue(Roles::class.java) ?: Roles()
+                
+                // Determine donor and requester IDs based on roles
+                val (donorId, requesterId) = if (roles.donor) {
+                    Pair(currentUserId, targetUserId)
+                } else if (roles.requester) {
+                    Pair(targetUserId, currentUserId)
+                } else {
+                    Toast.makeText(this, "You must be either a donor or requester to create appointments", Toast.LENGTH_SHORT).show()
+                    dialog.dismiss()
+                    return@addOnSuccessListener
+                }
+
+                btnSend.setOnClickListener {
+                    val country = etCountry.text.toString()
+                    val city = etCity.text.toString()
+                    val venue = etVenue.text.toString()
+                    val date = etDate.text.toString()
+
+                    if (country.isEmpty() || city.isEmpty() || venue.isEmpty() || date.isEmpty()) {
+                        Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                        return@setOnClickListener
+                    }
+
+                    val appointmentData = hashMapOf<String, Any>(
+                        "donorId" to donorId,
+                        "requesterId" to requesterId,
+                        "createdBy" to currentUserId,
+                        "country" to country,
+                        "city" to city,
+                        "venue" to venue,
+                        "date" to date,
+                        "status" to "pending",
+                        "createdAt" to Date().time.toString()
+                    )
+
+                    val appointmentRef = FirebaseDatabase.getInstance().getReference("appointments").push()
+                    appointmentRef.setValue(appointmentData)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Appointment request sent successfully", Toast.LENGTH_SHORT).show()
+                            dialog.dismiss()
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(this, "Error sending appointment request", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
 
         btnCancel.setOnClickListener {
             dialog.dismiss()
-        }
-
-        btnSend.setOnClickListener {
-            val country = etCountry.text.toString().trim()
-            val city = etCity.text.toString().trim()
-            val venue = etVenue.text.toString().trim()
-            val date = etDate.text.toString().trim()
-
-            if (country.isEmpty() || city.isEmpty() || venue.isEmpty() || date.isEmpty()) {
-                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            // Create appointment
-            val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
-            val donorId = intent.getStringExtra("userId") ?: return@setOnClickListener
-
-            val appointment = Appointment(
-                id = "appointment_${System.currentTimeMillis()}",
-                donorId = donorId,
-                requesterId = currentUserId,
-                createdBy = currentUserId,
-                country = country,
-                city = city,
-                venue = venue,
-                date = date,
-                status = "pending",
-                createdAt = Instant.now().toString()
-            )
-
-            // Save appointment to Firebase
-            FirebaseDatabase.getInstance().getReference("appointments")
-                .child(appointment.id)
-                .setValue(appointment)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Appointment request sent", Toast.LENGTH_SHORT).show()
-                    dialog.dismiss()
-                }
-                .addOnFailureListener {
-                    Toast.makeText(this, "Failed to send request", Toast.LENGTH_SHORT).show()
-                }
         }
 
         dialog.show()

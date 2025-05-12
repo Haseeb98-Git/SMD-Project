@@ -58,54 +58,47 @@ class RequesterRegistrationFragment : Fragment() {
     private fun saveRequesterRegistration() {
         val userId = auth.currentUser?.uid ?: return
 
-        val bloodType = binding.bloodTypeDropdown.text.toString()
-        val country = binding.countryEditText.text.toString()
-        val city = binding.cityEditText.text.toString()
-        val address = binding.addressEditText.text.toString()
-        val urgency = binding.urgencyDropdown.text.toString()
-        val description = binding.descriptionEditText.text.toString()
-
-        if (bloodType.isEmpty() || country.isEmpty() || city.isEmpty() || 
-            address.isEmpty() || urgency.isEmpty() || description.isEmpty()) {
-            Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val requesterData = hashMapOf<String, Any>(
-            "bloodType" to bloodType,
-            "country" to country,
-            "city" to city,
-            "address" to address,
-            "urgency" to urgency,
-            "description" to description,
-            "updatedAt" to Date().time.toString()
-        )
-
-        database.reference.child("requesterRegistrations").child(userId)
-            .setValue(requesterData)
-            .addOnSuccessListener {
-                Toast.makeText(context, "Requester registration saved successfully", Toast.LENGTH_SHORT).show()
-                // Update user roles to include requester
-                updateUserRoles(true)
-            }
-            .addOnFailureListener {
-                Toast.makeText(context, "Error saving requester registration", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    private fun updateUserRoles(isRequester: Boolean) {
-        val userId = auth.currentUser?.uid ?: return
+        // Check if user has requester role
         database.reference.child("users").child(userId).child("roles")
             .get()
             .addOnSuccessListener { snapshot ->
-                val currentRoles = snapshot.getValue(Roles::class.java) ?: Roles()
-                val updatedRoles = currentRoles.copy(requester = isRequester)
-                
-                database.reference.child("users").child(userId).child("roles")
-                    .setValue(updatedRoles)
+                val roles = snapshot.getValue(Roles::class.java) ?: Roles()
+                if (!roles.requester) {
+                    Toast.makeText(context, "You must select requester role in your profile first", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+
+                val bloodType = binding.bloodTypeDropdown.text.toString()
+                val country = binding.countryEditText.text.toString()
+                val city = binding.cityEditText.text.toString()
+                val address = binding.addressEditText.text.toString()
+                val urgency = binding.urgencyDropdown.text.toString()
+                val description = binding.descriptionEditText.text.toString()
+
+                if (bloodType.isEmpty() || country.isEmpty() || city.isEmpty() || 
+                    address.isEmpty() || urgency.isEmpty() || description.isEmpty()) {
+                    Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
+                }
+
+                val requesterData = hashMapOf<String, Any>(
+                    "bloodType" to bloodType,
+                    "country" to country,
+                    "city" to city,
+                    "address" to address,
+                    "urgency" to urgency,
+                    "description" to description,
+                    "updatedAt" to Date().time.toString()
+                )
+
+                database.reference.child("requesterRegistrations").child(userId)
+                    .setValue(requesterData)
                     .addOnSuccessListener {
-                        // Navigate back
+                        Toast.makeText(context, "Requester registration saved successfully", Toast.LENGTH_SHORT).show()
                         requireActivity().onBackPressed()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(context, "Error saving requester registration", Toast.LENGTH_SHORT).show()
                     }
             }
     }
